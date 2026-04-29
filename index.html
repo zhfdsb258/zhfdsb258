@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>外网数据提交</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#f2f3f5;font-family:"微软雅黑";padding:20px;}
+.card{max-width:380px;margin:0 auto;background:#fff;border-radius:12px;padding:25px;}
+h3{text-align:center;margin-bottom:25px;color:#333;}
+.item{margin-bottom:18px;}
+label{display:block;margin-bottom:6px;font-size:14px;color:#666;}
+input{width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:6px;font-size:16px;}
+button{width:100%;padding:13px;background:#1677ff;color:#fff;border:none;border-radius:6px;font-size:16px;margin-top:10px;}
+.msg{text-align:center;margin-top:16px;font-size:14px;}
+</style>
+</head>
+<body>
+<div class="card">
+    <h3>外网数据提交</h3>
+
+    <div class="item">
+        <label>姓名</label>
+        <input type="text" id="name" placeholder="请输入姓名">
+    </div>
+    <div class="item">
+        <label>性别</label>
+        <input type="text" id="gender" placeholder="请输入性别">
+    </div>
+    <div class="item">
+        <label>年龄</label>
+        <input type="text" id="age" placeholder="请输入年龄">
+    </div>
+
+    <button onclick="submitData()">立即提交</button>
+    <div class="msg" id="msg"></div>
+</div>
+
+<script>
+// 1. 你的 Power Automate 官方外网URL（不变）
+const PA_URL = "https://a143b6b17a06ee96bf0f7eecad2dac.13.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bcb1268aab4b483e8910df73158015cd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=UiZbFkJQauMtC1dCssU_VV1jAzo8hXD5axbsAQnIku8";
+
+// 2. 简易安全密钥（你可以自行修改，后面PA流程里加判断）
+const SECRET_KEY = "20260429";
+
+async function submitData(){
+    const name = document.getElementById("name").value.trim();
+    const gender = document.getElementById("gender").value.trim();
+    const age = document.getElementById("age").value.trim();
+    const msgDom = document.getElementById("msg");
+
+    if(!name || !gender || !age){
+        msgDom.innerText = "请填写完整内容";
+        msgDom.style.color = "red";
+        return;
+    }
+
+    msgDom.innerText = "提交中，请稍候...";
+    msgDom.style.color = "#666";
+
+    // 固定JSON格式，和你PA触发器完全对应
+    const postData = {
+        name: name,
+        gender: gender,
+        age: age,
+        key: SECRET_KEY
+    };
+
+    try{
+        await fetch(PA_URL,{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(postData)
+        });
+        msgDom.innerText = "✅ 提交成功，已同步至数据库";
+        msgDom.style.color = "green";
+    }catch(err){
+        msgDom.innerText = "❌ 提交失败，请检查网络";
+        msgDom.style.color = "red";
+    }
+}
+</script>
+</body>
+</html>
