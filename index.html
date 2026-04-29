@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>外网数据提交</title>
+<title>外网数据提交 V3.0</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#f2f3f5;font-family:"微软雅黑";padding:20px;}
@@ -18,7 +18,7 @@ button{width:100%;padding:13px;background:#1677ff;color:#fff;border:none;border-
 </head>
 <body>
 <div class="card">
-    <h3>外网数据提交</h3>
+    <h3>数据提交 V3.0</h3>
     <div class="item">
         <label>姓名</label>
         <input type="text" id="name" placeholder="请输入姓名">
@@ -29,52 +29,48 @@ button{width:100%;padding:13px;background:#1677ff;color:#fff;border:none;border-
     </div>
     <div class="item">
         <label>年龄</label>
-        <input type="number" id="age" placeholder="请输入数字年龄">
+        <input type="number" id="age" placeholder="请输入数字">
     </div>
     <button onclick="submitData()">立即提交</button>
     <div class="msg" id="msg"></div>
 </div>
 
 <script>
-// 你自己的真实URL 我保持不动
-const PA_URL = "https://a143b6b7d70549b49b917dd447b599d7.powerautomate.com/api/flow/...";
+// ======================
+// V3.0 最终稳定版
+// ======================
+const PA_URL = "https://a143b6b17a06ee96bf0f7eecad2dac.167d.powerautomate.com/api/flow/...";
 
 async function submitData() {
-    const msgDom = document.getElementById("msg");
+    const msg = document.getElementById("msg");
     const name = document.getElementById("name").value.trim();
     const gender = document.getElementById("gender").value.trim();
-    const ageValue = document.getElementById("age").value.trim();
+    const ageInput = document.getElementById("age").value.trim();
 
-    if (!name || !gender || !ageValue) {
-        msgDom.innerText = "请填写完整信息";
-        msgDom.style.color = "red";
+    if (!name || !gender || !ageInput) {
+        msg.innerText = "请填写完整";
+        msg.style.color = "red";
         return;
     }
 
-    const age = parseInt(ageValue);
-
-    msgDom.innerText = "提交中...";
-    msgDom.style.color = "#333";
+    const age = Number(ageInput);
+    msg.innerText = "提交中...V3.0";
 
     try {
-        const response = await fetch(PA_URL, {
+        await fetch(PA_URL, {
             method: "POST",
-            mode: "no-cors",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 name: name,
                 gender: gender,
                 age: age
             })
         });
-
-        msgDom.innerText = "✅ 提交成功，已触发流程";
-        msgDom.style.color = "green";
-    } catch (error) {
-        msgDom.innerText = "❌ 提交失败";
-        msgDom.style.color = "red";
+        msg.innerText = "✅ 提交成功 V3.0";
+        msg.style.color = "green";
+    } catch (e) {
+        msg.innerText = "❌ 提交失败";
+        msg.style.color = "red";
     }
 }
 </script>
