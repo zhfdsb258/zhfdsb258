@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>外网数据提交 V3.0</title>
+<title>外网数据提交 V3.2</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#f2f3f5;font-family:"微软雅黑";padding:20px;}
@@ -18,7 +18,7 @@ button{width:100%;padding:13px;background:#1677ff;color:#fff;border:none;border-
 </head>
 <body>
 <div class="card">
-    <h3>数据提交 V3.0</h3>
+    <h3>数据提交 V3.2</h3>
     <div class="item">
         <label>姓名</label>
         <input type="text" id="name" placeholder="请输入姓名">
@@ -29,17 +29,15 @@ button{width:100%;padding:13px;background:#1677ff;color:#fff;border:none;border-
     </div>
     <div class="item">
         <label>年龄</label>
-        <input type="number" id="age" placeholder="请输入数字">
+        <input type="number" id="age" placeholder="请输入数字年龄">
     </div>
     <button onclick="submitData()">立即提交</button>
     <div class="msg" id="msg"></div>
 </div>
 
 <script>
-// ======================
-// V3.0 最终稳定版
-// ======================
-const PA_URL = "https://a143b6b17a06ee96bf0f7eecad2dac.167d.powerautomate.com/api/flow/...";
+// 你的 Power Automate URL
+const PA_URL = "你的PowerAutomate触发URL";
 
 async function submitData() {
     const msg = document.getElementById("msg");
@@ -48,16 +46,23 @@ async function submitData() {
     const ageInput = document.getElementById("age").value.trim();
 
     if (!name || !gender || !ageInput) {
-        msg.innerText = "请填写完整";
+        msg.innerText = "请填写完整信息";
         msg.style.color = "red";
         return;
     }
 
-    const age = Number(ageInput);
-    msg.innerText = "提交中...V3.0";
+    // 关键：强制转为数字类型
+    const age = parseInt(ageInput, 10);
+    if (isNaN(age)) {
+        msg.innerText = "年龄必须是数字";
+        msg.style.color = "red";
+        return;
+    }
+
+    msg.innerText = "提交中...V3.2";
 
     try {
-        await fetch(PA_URL, {
+        const response = await fetch(PA_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -66,10 +71,17 @@ async function submitData() {
                 age: age
             })
         });
-        msg.innerText = "✅ 提交成功 V3.0";
-        msg.style.color = "green";
+
+        if (response.ok) {
+            msg.innerText = "✅ 提交成功！已触发流程";
+            msg.style.color = "green";
+        } else {
+            // 即使前端显示失败，请求也已发送，请检查数据库
+            msg.innerText = "⚠️ 请求已发送，请直接检查数据库";
+            msg.style.color = "orange";
+        }
     } catch (e) {
-        msg.innerText = "❌ 提交失败";
+        msg.innerText = "❌ 提交失败，请检查网络";
         msg.style.color = "red";
     }
 }
