@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>外网数据提交【最终版】</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#f4f5f7;font-family:"微软雅黑";padding:20px;}
+.box{max-width:380px;margin:0 auto;background:#fff;border-radius:12px;padding:25px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+h3{text-align:center;margin-bottom:20px;color:#333;}
+.item{margin-bottom:16px;}
+label{display:block;margin-bottom:6px;font-size:14px;color:#555;}
+input{width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;font-size:15px;}
+button{width:100%;padding:13px;background:#0078d4;color:#fff;border:none;border-radius:6px;font-size:16px;margin-top:8px;}
+#msg{text-align:center;margin-top:16px;font-size:14px;}
+</style>
+</head>
+<body>
+<div class="box">
+    <h3>数据提交【最终版】</h3>
+    <div class="item">
+        <label>姓名</label>
+        <input type="text" id="name" placeholder="请输入姓名">
+    </div>
+    <div class="item">
+        <label>性别</label>
+        <input type="text" id="gender" placeholder="请输入性别">
+    </div>
+    <div class="item">
+        <label>年龄（数字）</label>
+        <input type="number" id="age" placeholder="请输入数字">
+    </div>
+    <button onclick="submit()">提交数据</button>
+    <div id="msg"></div>
+</div>
+
+<script>
+// 你提供的最新 URL
+const url = "https://a143b6b17a06ee96bf0f7eecad2dac.13.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/13b33ba53f8b4bf9a2d542d604750210/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=60l1h4bp7Nj9a0XxUK3H1wIro7e_GAYynlp3hKj8q0U";
+
+async function submit() {
+    const msg = document.getElementById("msg");
+    const name = document.getElementById("name").value.trim();
+    const gender = document.getElementById("gender").value.trim();
+    const ageVal = document.getElementById("age").value.trim();
+
+    if (!name || !gender || !ageVal) {
+        msg.innerText = "请填写完整信息";
+        msg.style.color = "red";
+        return;
+    }
+
+    const age = parseInt(ageVal);
+    msg.innerText = "提交中...";
+    msg.style.color = "#333";
+
+    try {
+        await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: name,
+                gender: gender,
+                age: age
+            })
+        });
+        msg.innerText = "✅ 提交成功！流已触发";
+        msg.style.color = "green";
+    } catch (e) {
+        msg.innerText = "⚠️ 请求已发送，检查数据库";
+        msg.style.color = "orange";
+    }
+}
+</script>
+</body>
+</html>
