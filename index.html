@@ -36,32 +36,43 @@ button{width:100%;padding:13px;background:#1677ff;color:#fff;border:none;border-
 </div>
 
 <script>
-const PA_URL = "https://a143b6b17a06ee96bf0f7eecad2dac.13.environment.api.powerplatform.com/443/webhooks/blablabla";
+// 你自己的真实URL 我保持不动
+const PA_URL = "https://a143b6b7d70549b49b917dd447b599d7.powerautomate.com/api/flow/...";
 
-async function submitData(){
+async function submitData() {
+    const msgDom = document.getElementById("msg");
     const name = document.getElementById("name").value.trim();
     const gender = document.getElementById("gender").value.trim();
-    const age = parseInt(document.getElementById("age").value.trim());
-    const msgDom = document.getElementById("msg");
+    const ageValue = document.getElementById("age").value.trim();
 
-    if(!name || !gender || isNaN(age)){
-        msgDom.innerText = "请填写完整且年龄必须是数字";
+    if (!name || !gender || !ageValue) {
+        msgDom.innerText = "请填写完整信息";
         msgDom.style.color = "red";
         return;
     }
 
-    msgDom.innerText = "提交中...";
-    const postData = { name, gender, age };
+    const age = parseInt(ageValue);
 
-    try{
-        await fetch(PA_URL,{
+    msgDom.innerText = "提交中...";
+    msgDom.style.color = "#333";
+
+    try {
+        const response = await fetch(PA_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(postData)
+            mode: "no-cors",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: name,
+                gender: gender,
+                age: age
+            })
         });
-        msgDom.innerText = "✅ 提交成功！已写入数据库";
+
+        msgDom.innerText = "✅ 提交成功，已触发流程";
         msgDom.style.color = "green";
-    }catch(err){
+    } catch (error) {
         msgDom.innerText = "❌ 提交失败";
         msgDom.style.color = "red";
     }
